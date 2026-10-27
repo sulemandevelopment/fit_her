@@ -88,6 +88,7 @@ class MissedSessionRecoveryActions extends StatelessWidget {
       instructorName: occ.slot.trainerName,
       reason: action,
     );
+    if (!sheetContext.mounted) return;
     Navigator.of(sheetContext).pop();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!parentContext.mounted) return;

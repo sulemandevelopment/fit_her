@@ -30,7 +30,7 @@
 
 | ID / name | Status | Notes |
 |-----------|--------|-------|
-| Cycle & period prediction (date only) | Complete | 2NH14 “what to expect” still Missing |
+| Cycle & period prediction (date only) | Complete | 2NH14 “what to expect” is a short estimate on the cycle card |
 | Mood logging | Partial | Not unified daily log (1NH1/1NH2) |
 | General hormonal wellbeing logic layer | Partial | `insight_service`, cycle engine |
 | AI diet plan (on request) | Complete | Do not break; 2NH3 auto-adjust = Deferred AI |
@@ -41,7 +41,7 @@
 | Thumbs up/down after sessions | Complete | |
 | Community access & feed | Complete | |
 | Ad-free experience (Plus) | Partial | Verify X4 tier enforcement |
-| Free trial / first week | Missing vs PDF | Target **1P8** |
+| Free trial / first week | Partial | Plan-page 7-day trial (1P8). 3-day class trial still separate. |
 | Savings on 3 & 6 month plans | Complete | Verify display in **1P7** |
 | International USD pricing | Complete | |
 
@@ -67,7 +67,7 @@ PDF status: **To check** (audits + fixes, not net-new features).
 
 | ID | Feature | Status | Notes |
 |----|---------|--------|-------|
-| X1 | Exercise list with tags | Missing | Content + admin CMS |
+| X1 | Exercise list with tags | Partial | Admin and user APIs, tag filter, injury hide, mark done, starter written moves. Animation clips and a trainer-signed catalog are still missing (X8). |
 | X2 | Live class tags | Partial | Intensity exists; full tag set incomplete |
 | X3 | Workout player with mark done | Missing | |
 | X4 | Tier counters & checks | Partial | Plan status; monthly counters/freeze incomplete |
@@ -97,7 +97,7 @@ PDF status: **To check** (audits + fixes, not net-new features).
 | 1NH12 | Luna daily body advisor | Partial | Preserve Gemini batch; extend via rules/templates, not live AI |
 | 1NH13 | Phase based nudge notifications | Partial | |
 | 1NH14 | Daily phase message (Free) | Partial | Locked Luna on unpaid home |
-| 1NH15 | Smart log reminders | Missing | |
+| 1NH15 | Smart log reminders | Partial | Local 8 PM daily check-in reminder. Off during quiet hours and after today’s log. Toggle `dailyLog`. Learned usual-time still missing. Migration `20261028160000`. |
 
 ---
 
@@ -105,8 +105,8 @@ PDF status: **To check** (audits + fixes, not net-new features).
 
 | ID | Feature | Status | Notes |
 |----|---------|--------|-------|
-| 1M1 | Injury and limitation filter | Partial | Onboarding collects; no filter on moves/classes |
-| 1M2 | Phase adaptive workout intensity | Partial | Class badges; needs 1NH3–5 |
+| 1M1 | Injury and limitation filter | Partial | Workout schedule hides high-impact classes when the saved injury note mentions knee, ankle, hip, or shoulder. Does not hide the whole day. |
+| 1M2 | Phase adaptive workout intensity | Partial | Low energy (1–2) lists gentler classes first. Phase badges were already on the schedule. |
 | 1M3 | Animated guided workouts | Missing | Needs X1, X3, X5, X8 |
 | 1M4 | Voice and written form cues | Missing | With 1M3 |
 | 1M5 | Post workout feedback | Missing | |
@@ -125,7 +125,7 @@ PDF status: **To check** (audits + fixes, not net-new features).
 | 1P5 | Payment slip upload fix & clear states | Partial | **Priority** — known broken picker |
 | 1P6 | Faster plan activation (instant payment) | Partial + Blocked | Merchant credentials |
 | 1P7 | Clearer plan page and paywall | Partial | |
-| 1P8 | Free trial and first week flow | Missing | **Approved:** plan-page subscription trial |
+| 1P8 | Free trial and first week flow | Partial | Plan-page 7-day trial: day counter, last-day reminder, Continue opens checkout. Does not grant a paid plan or replace the 3-day class trial. Migration `20261028170000`. |
 | 1P9 | Upgrade moments | Partial | |
 | 1P10 | Home screen with one daily focus | Partial | |
 | 1P11 | Fix wrong and broken screen details | Partial | |
@@ -140,20 +140,20 @@ PDF status: **To check** (audits + fixes, not net-new features).
 
 | ID | Feature | Status | Notes |
 |----|---------|--------|-------|
-| 2NH1 | Food preferences and allergies filter | Partial | `foodProfileFilter`, `/users/food-profile`, settings screen, meal plan flags; keyword rules not dietitian-reviewed list |
-| 2NH2 | Phase aware food scoring on meals | Missing | Rules-based; needs meal logging quality |
+| 2NH1 | Food preferences and allergies filter | Partial | Verified Oct 2026: backend 3 + Flutter 2 tests pass. Keyword list not dietitian-signed. |
+| 2NH5 | Appetite and cravings logging | Partial | `appetiteLevel` + whitelist `cravingType` on daily check-in; quick check-in UI. Migration `20261028140000`. Deploy migration before release. |
+| 2NH2 | Phase aware food scoring on meals | Partial | Keyword rules + `POST /users/food-profile/phase-score`; meal card note. Not a dietitian-reviewed food list. |
 | 2NH3 | Automatic weekly diet plan adjustment | Deferred AI | |
 | 2NH4 | AI grocery list with phase swaps | Deferred AI | |
-| 2NH5 | Appetite and cravings logging | Missing | |
-| 2NH6 | Digestion logging | Missing | |
-| 2NH7 | Medications and supplements logging | Missing | |
-| 2NH8 | Period flow and spotting logging | Missing | |
-| 2NH9 | Skin and hair logging | Missing | |
-| 2NH10 | Weekly symptom pattern report | Partial | Progress v2; beta gate |
-| 2NH11 | Weekly progress summary | Partial | |
+| 2NH6 | Digestion logging | Partial | Optional 1–5 on quick check-in; `digestionLevel` |
+| 2NH7 | Medications and supplements logging | Partial | Optional daily `supplementLog` (not a clinical meds module) |
+| 2NH8 | Period flow and spotting logging | Partial | Optional `periodFlow` chips including spotting |
+| 2NH9 | Skin and hair logging | Partial | Optional `skinStatus` / `hairStatus`. Migration `20261028150000` |
+| 2NH10 | Weekly symptom pattern report | Partial | `GET /users/progress/weekly-pattern` + progress card. Needs 3 logged days. Beta progress hub still gates who sees it. |
+| 2NH11 | Weekly progress summary | Partial | Rules lines on the weekly card (`summaryLines`): check-ins, mood, energy, stress, meals. Not a full PDF. |
 | 2NH12 | Doctor ready PDF export | Partial | Sections incomplete |
-| 2NH13 | Monthly nutrition and body report | Missing | AI summary Deferred; rules/charts OK without AI |
-| 2NH14 | Period predictor: what to expect | Missing | |
+| 2NH13 | Monthly nutrition and body report | Partial | `GET /users/progress/monthly-report` + progress card. Needs 8 logged days. Charts for mood, energy, stress, digestion, appetite. AI write-up still Deferred. |
+| 2NH14 | Period predictor: what to expect | Partial | Estimate copy on the cycle card from phase + days until period. Not a clinical forecast. |
 
 ---
 
@@ -338,19 +338,46 @@ Order: 1NH1→1NH6, 1NH7 → 1NH15 → 1M1/1M2 → X1/X2/X5 → X3/X8/1M3/1M4 �
 | Oct 2026 | Backend — appointments P0 | Partial | Auth on create/read/delete/list; ownership checks on create/getById/dietitian list |
 | Oct 2026 | **1NH1–1NH2 + 1NH3–5** daily log | Partial | Migration `20261028130000`, stress/symptoms API, `QuickDailyCheckinScreen`, home banner; 48h edit = today-only server rule |
 | Oct 2026 | **X7** missed session sheet | Partial | `slot_session_stats`, `MissedSessionRecoveryActions`, dashboard calorie estimate; tests: backend 2 pass, Flutter 4 pass |
-| Oct 2026 | **2NH1** food prefs & allergies | Partial | Backend filter + API; `FoodPreferencesScreen`; meal card banners; tests 3+2 pass |
+| Oct 2026 | **2NH1** food prefs & allergies | Partial | Verified: foodProfileFilter tests 3+2 pass |
+| Oct 2026 | **2NH5** appetite & cravings | Partial | Migration + server whitelist; quick check-in fields; `appetiteCraving.test.js` |
+| Oct 2026 | **2NH6–2NH9** body log | Partial | Digestion, supplements, period flow, skin, hair on quick check-in. Migration `20261028150000` |
+| Oct 2026 | **2NH2** phase food score | Partial | Keyword rules; API + meal card. Tests 2+2 pass |
+| Oct 2026 | **2NH10** weekly symptom pattern | Partial | Rules summary of last 7 check-ins; `weeklySymptomPattern.test.js` |
+| Oct 2026 | **2NH11** weekly progress summary | Partial | `summaryLines` on the same weekly card; meal count included |
+| Oct 2026 | **2NH14** period what to expect | Partial | Cycle card estimate copy; tests on client and server |
+| Oct 2026 | **2NH13** monthly body report | Partial | Rules and charts from 30 days of check-ins and meal logs. No AI summary. |
+| Oct 2026 | **1NH15** daily log reminder | Partial | 8 PM local reminder; quiet hours and already-logged skip. Not a learned time. |
 | Oct 2026 | Onboarding / plans shell | No | Next screen group |
-| Oct 2026 | 1P8 trial | No | Next milestone |
-| Oct 2026 | Day7 escalation UI | No | Next milestone |
+| Oct 2026 | **1P8** plan-page trial | Partial | 7-day record, day counter, reminder cron, Continue opens checkout |
+| Oct 2026 | Day7 escalation UI | Partial | Flagged check-in stays on a dietitian note instead of a toast |
+| Oct 2026 | Signup and payment forms | Partial | Inline errors on signup and the Direct Pay phone field |
+| Oct 2026 | **1M1 / 1M2** class filter | Partial | Injury hide + low-energy order on the workout schedule |
+| Oct 2026 | **X1** exercise library | Partial | Tagged exercises, injury filter, mark done. No animation files. |
 
 **Tests:** `test/core/fh_validators_test.dart` — 5 passed; `partner_backend/test/dailyCheckinSymptoms.test.js` — 2 passed. Analyzer clean on touched files (warnings/info only).
 
-**Deploy note:** Run migration `20261028130000-add-stress-symptoms-to-daily-checkins.js` on staging/production before release.
+**Deploy note:** Run migrations `20261028130000`, `20261028140000`, `20261028150000`, `20261028160000`, and `20261028170000` on staging/production before release.
+
+---
+
+## Production readiness QA (Oct 2026)
+
+Full report: [`docs/production-readiness-qa-report.md`](production-readiness-qa-report.md)
+
+| Check | Result |
+|-------|--------|
+| `flutter analyze` errors | **0** (~240 warnings/info pre-existing) |
+| `flutter test` | **177/177 pass** (after slot + progress routing test fixes) |
+| Backend `node --test test/*.test.js` | **7/7 pass** |
+| Android/iOS device E2E | **Not run** (no simulators connected) |
+| PDF checklist complete | **No** — see plan tables |
+| **Release recommendation** | **No-go** until P0 blockers + staging E2E |
 
 ---
 
 ## Related docs
 
+- `docs/production-readiness-qa-report.md`
 - `docs/architecture-audit.md`
 - `lib/docs/diet_system_full_audit.md`  
 - `lib/docs/free_trial_system_audit.md`  

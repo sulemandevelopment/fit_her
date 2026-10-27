@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/cycle/period_what_to_expect.dart';
 import '../../data/models/home_dashboard/home_dashboard_model.dart';
 import '../new_home/phase_theme.dart';
 
@@ -22,6 +23,9 @@ class PaidCycleCard extends StatelessWidget {
     final phaseTheme = PhaseTheme.forPhaseString(cycle.phase);
     final phaseLabel = cycle.phaseLabel ?? phaseTheme.phaseLabel;
     final periodLine = _formatPeriodLine(cycle.periodInDays);
+    final expect = (cycle.expectNote != null && cycle.expectNote!.trim().isNotEmpty)
+        ? cycle.expectNote!
+        : periodWhatToExpect(phase: cycle.phase, periodInDays: cycle.periodInDays);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
@@ -76,6 +80,17 @@ class PaidCycleCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 10,
                 color: Color(0xFF9AB09A),
+              ),
+            ),
+          ],
+          if (expect != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              expect,
+              style: const TextStyle(
+                fontSize: 11,
+                height: 1.35,
+                color: Color(0xFF5A7A56),
               ),
             ),
           ],

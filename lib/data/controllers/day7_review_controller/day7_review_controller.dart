@@ -105,13 +105,13 @@ class Day7ReviewController extends GetxController {
   /// 2 wiring lands.
   int get currentCycle => 1;
 
-  /// POST the review. On success: snackbar elsewhere, here we just
-  /// flip suppression + isEligible so the banner disappears.
-  Future<bool> submit(Day7ReviewSubmission submission) async {
+  /// POST the review. On success the banner hides. A flagged review
+  /// is returned so the screen can show the dietitian note.
+  Future<Day7Review?> submit(Day7ReviewSubmission submission) async {
     isSubmitting.value = true;
     submissionError.value = null;
     try {
-      await repo.submitDay7Review(
+      final review = await repo.submitDay7Review(
         accessToken: _token,
         submission: submission,
       );
@@ -120,14 +120,14 @@ class Day7ReviewController extends GetxController {
         cycle: submission.cycle,
       );
       isEligible.value = false;
-      return true;
+      return review;
     } on DietPlanApiException catch (e) {
       submissionError.value = e.message;
-      return false;
+      return null;
     } catch (_) {
       submissionError.value =
           "Network error — check your connection and try again";
-      return false;
+      return null;
     } finally {
       isSubmitting.value = false;
     }

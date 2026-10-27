@@ -12,7 +12,11 @@ class NotificationScheduler {
   NotificationScheduler._();
 
   static const int morningNudgeId = 1001;
+  static const int dailyLogId = 1002;
   static const int weeklyCheckinId = 6001;
+
+  /// 1NH15 — 8:00 PM local, unless that minute sits inside quiet hours.
+  static const int dailyLogHour = 20;
 
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -87,6 +91,47 @@ class NotificationScheduler {
     );
   }
 
+  /// Hour for the daily log reminder, or null when 8:00 PM is inside quiet hours.
+  static int? dailyLogReminderHour(String quietStart, String quietEnd) {
+    final probe = DateTime(2026, 1, 1, dailyLogHour, 0);
+    if (isQuietHours(quietStart, quietEnd, probe)) return null;
+    return dailyLogHour;
+  }
+
+  /// Schedules a daily check-in reminder. Skipped when the toggle is off,
+  /// when 8 PM is inside quiet hours, or moved to tomorrow if today is logged.
+  static Future<void> scheduleDailyLog({
+    required bool enabled,
+    required bool alreadyLoggedToday,
+    required String quietStart,
+    required String quietEnd,
+  }) async {
+    if (!enabled || dailyLogReminderHour(quietStart, quietEnd) == null) {
+      await _plugin.cancel(dailyLogId);
+      return;
+    }
+
+    tz.TZDateTime? now;
+    if (alreadyLoggedToday) {
+      final n = tz.TZDateTime.now(tz.local);
+      now = tz.TZDateTime(tz.local, n.year, n.month, n.day, 23, 59);
+    }
+
+    try {
+      await _plugin.zonedSchedule(
+        dailyLogId,
+        'Log today’s check-in',
+        'A minute for mood, energy, and how your body felt. Skip it if you already logged.',
+        nextOccurrence(dailyLogHour, 0, now),
+        _notificationDetails(),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
+      debugPrint('🔔 ERROR scheduling daily log: $e');
+    }
+  }
+
   /// Returns true if [now] (defaults to the current local time) falls
   /// within quiet hours.
   ///
@@ -114,26 +159,38 @@ class NotificationScheduler {
   /// Reschedules all notifications based on current preferences.
   ///
   /// Called on every app open to ensure notifications reflect current state.
-  /// [prefs] should contain keys: morningNudge, weeklyCheckin, quietStart, quietEnd.
+  /// [prefs] should contain keys: morningNudge, weeklyCheckin, dailyLog,
+  /// quietStart, quietEnd. Missing dailyLog stays on.
   static Future<void> rescheduleAll({
     required Map<String, dynamic> prefs,
     required bool weeklyCheckinDone,
+    bool dailyLogDoneToday = false,
   }) async {
     await initialize();
 
     final morningEnabled = prefs['morningNudge'] == 1;
     final weeklyEnabled = prefs['weeklyCheckin'] == 1;
+    final dailyEnabled = prefs['dailyLog'] != 0;
+    final quietStart = prefs['quietStart']?.toString() ?? '22:00';
+    final quietEnd = prefs['quietEnd']?.toString() ?? '07:00';
 
     await scheduleMorningNudge(enabled: morningEnabled);
     await scheduleWeeklyCheckin(
       enabled: weeklyEnabled,
       alreadyDoneThisWeek: weeklyCheckinDone,
     );
+    await scheduleDailyLog(
+      enabled: dailyEnabled,
+      alreadyLoggedToday: dailyLogDoneToday,
+      quietStart: quietStart,
+      quietEnd: quietEnd,
+    );
   }
 
   /// Cancels all scheduled notifications managed by this scheduler.
   static Future<void> cancelAll() async {
     await _plugin.cancel(morningNudgeId);
+    await _plugin.cancel(dailyLogId);
     await _plugin.cancel(weeklyCheckinId);
   }
 

@@ -29,6 +29,13 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
   int? _energy;
   int? _stress;
   String? _stressCause;
+  int? _appetite;
+  String? _craving;
+  int? _digestion;
+  String? _periodFlow;
+  String? _skin;
+  String? _hair;
+  final _supplements = TextEditingController();
   double _sleepHours = 7;
   int? _sleepQuality;
   final Map<String, int> _symptomSeverity = {};
@@ -60,6 +67,7 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
 
   @override
   void dispose() {
+    _supplements.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -102,7 +110,7 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
                         ),
                         SizedBox(height: 6.h),
                         Text(
-                          'Under a minute — mood, energy, stress, and sleep. '
+                          'Mood, energy, stress, sleep, appetite, and cravings. '
                           'Optional symptoms help your weekly reports.',
                           style: AppTypography.bodySmall
                               .copyWith(color: AppColors.brandTextMuted),
@@ -126,13 +134,83 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
                           value: _stress,
                           onPick: (v) => setState(() {
                             _stress = v;
-                            if (v != null && v < 4) _stressCause = null;
+                            if (v < 4) _stressCause = null;
                           }),
                         ),
                         if ((_stress ?? 0) >= 4) ...[
                           SizedBox(height: 8.h),
                           _stressCauseChips(),
                         ],
+                        _scaleSection(
+                          key: const ValueKey('appetite'),
+                          label: 'Appetite (1 low – 5 strong)',
+                          value: _appetite,
+                          onPick: (v) => setState(() => _appetite = v),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text('Cravings',
+                            style: AppTypography.label
+                                .copyWith(color: AppColors.brandLabel)),
+                        SizedBox(height: 8.h),
+                        _cravingChips(),
+                        _scaleSection(
+                          key: const ValueKey('digestion'),
+                          label: 'Digestion (1 comfortable – 5 uncomfortable)',
+                          value: _digestion,
+                          onPick: (v) => setState(() => _digestion = v),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text('Period flow (optional)',
+                            style: AppTypography.label
+                                .copyWith(color: AppColors.brandLabel)),
+                        SizedBox(height: 8.h),
+                        _choiceChips(
+                          selected: _periodFlow,
+                          options: const [
+                            ('spotting', 'Spotting'),
+                            ('light', 'Light'),
+                            ('medium', 'Medium'),
+                            ('heavy', 'Heavy'),
+                          ],
+                          onPick: (v) => setState(() => _periodFlow = v),
+                        ),
+                        SizedBox(height: 12.h),
+                        Text('Skin (optional)',
+                            style: AppTypography.label
+                                .copyWith(color: AppColors.brandLabel)),
+                        SizedBox(height: 8.h),
+                        _choiceChips(
+                          selected: _skin,
+                          options: const [
+                            ('clear', 'Clear'),
+                            ('breakout', 'Breakout'),
+                            ('dry', 'Dry'),
+                            ('oily', 'Oily'),
+                            ('sensitive', 'Sensitive'),
+                          ],
+                          onPick: (v) => setState(() => _skin = v),
+                        ),
+                        SizedBox(height: 12.h),
+                        Text('Hair (optional)',
+                            style: AppTypography.label
+                                .copyWith(color: AppColors.brandLabel)),
+                        SizedBox(height: 8.h),
+                        _choiceChips(
+                          selected: _hair,
+                          options: const [
+                            ('normal', 'Normal'),
+                            ('shedding', 'Shedding'),
+                            ('dry', 'Dry'),
+                            ('oily', 'Oily'),
+                          ],
+                          onPick: (v) => setState(() => _hair = v),
+                        ),
+                        SizedBox(height: 12.h),
+                        FhTextField(
+                          controller: _supplements,
+                          label: 'Medications or supplements today (optional)',
+                          hint: 'e.g. iron, vitamin D',
+                        ),
                         SizedBox(height: 16.h),
                         Text('Sleep last night',
                             style: AppTypography.label
@@ -244,6 +322,46 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
     );
   }
 
+  Widget _choiceChips({
+    required String? selected,
+    required List<(String, String)> options,
+    required ValueChanged<String> onPick,
+  }) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: options.map((c) {
+        return FilterChip(
+          label: Text(c.$2),
+          selected: selected == c.$1,
+          onSelected: (_) => onPick(c.$1),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _cravingChips() {
+    const options = [
+      ('sweet', 'Sweet'),
+      ('salty', 'Salty'),
+      ('carbs', 'Carbs'),
+      ('comfort', 'Comfort'),
+      ('none', 'None'),
+    ];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: options.map((c) {
+        final selected = _craving == c.$1;
+        return FilterChip(
+          label: Text(c.$2),
+          selected: selected,
+          onSelected: (_) => setState(() => _craving = c.$1),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _stressCauseChips() {
     return Wrap(
       spacing: 8,
@@ -343,10 +461,12 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
     if (_mood == null ||
         _energy == null ||
         _stress == null ||
-        _sleepQuality == null) {
+        _sleepQuality == null ||
+        _appetite == null ||
+        _craving == null) {
       setState(() {
         _formError =
-            'Please rate mood, energy, stress, and how rested you feel.';
+            'Please rate mood, energy, stress, sleep, appetite, and cravings.';
       });
       await _scrollController.animateTo(
         0,
@@ -370,9 +490,16 @@ class _QuickDailyCheckinScreenState extends State<QuickDailyCheckinScreen> {
       energyLevel: _energy!,
       stressLevel: _stress!,
       stressCause: _stressCause,
+      appetiteLevel: _appetite!,
+      cravingType: _craving!,
       sleepHours: _sleepHours,
       sleepQuality: _sleepQuality!,
       symptoms: symptoms,
+      digestionLevel: _digestion,
+      supplementLog: _supplements.text,
+      periodFlow: _periodFlow,
+      skinStatus: _skin,
+      hairStatus: _hair,
     );
     if (!mounted) return;
     if (ok) {

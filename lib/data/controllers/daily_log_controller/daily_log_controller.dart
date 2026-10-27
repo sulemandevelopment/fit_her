@@ -33,9 +33,16 @@ class DailyLogController extends GetxController {
     required int energyLevel,
     required int stressLevel,
     String? stressCause,
+    required int appetiteLevel,
+    required String cravingType,
     required double sleepHours,
     required int sleepQuality,
     List<Map<String, dynamic>> symptoms = const [],
+    int? digestionLevel,
+    String? supplementLog,
+    String? periodFlow,
+    String? skinStatus,
+    String? hairStatus,
   }) async {
     if (isSaving.value) return false;
     isSaving.value = true;
@@ -51,10 +58,25 @@ class DailyLogController extends GetxController {
         'moodLevel': moodLevel,
         'energyLevel': energyLevel,
         'stressLevel': stressLevel,
+        'appetiteLevel': appetiteLevel,
+        'cravingType': cravingType,
         'sleepHours': sleepHours,
         'sleepQuality': sleepQuality,
         'symptoms': symptoms,
       };
+      if (digestionLevel != null) body['digestionLevel'] = digestionLevel;
+      if (supplementLog != null && supplementLog.trim().isNotEmpty) {
+        body['supplementLog'] = supplementLog.trim();
+      }
+      if (periodFlow != null && periodFlow.isNotEmpty) {
+        body['periodFlow'] = periodFlow;
+      }
+      if (skinStatus != null && skinStatus.isNotEmpty) {
+        body['skinStatus'] = skinStatus;
+      }
+      if (hairStatus != null && hairStatus.isNotEmpty) {
+        body['hairStatus'] = hairStatus;
+      }
       if (stressLevel >= 4 && stressCause != null && stressCause.isNotEmpty) {
         body['stressCause'] = stressCause;
       }

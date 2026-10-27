@@ -17,6 +17,8 @@ import '../../../widgets/progress_v2/goal_ring.dart';
 import '../../../widgets/progress_v2/period_chip_selector.dart';
 import '../../../widgets/progress_v2/phase_segmented_chart.dart';
 import '../../../widgets/progress_v2/trend_bar.dart';
+import '../../../widgets/progress_v2/monthly_report_card.dart';
+import '../../../widgets/progress_v2/weekly_pattern_card.dart';
 import 'progress_screen_v1.dart';
 
 /// Phase D — single-scroll Progress hub (replaces the legacy 2-tab
@@ -107,6 +109,10 @@ class _ProgressScreenV2State extends State<ProgressScreenV2> {
               _GutterPad(child: _HydrationCard(controller: controller)),
               const SizedBox(height: 14),
               const _GutterPad(child: _SymptomsCard()),
+              const SizedBox(height: 14),
+              const _GutterPad(child: WeeklyPatternCard()),
+              const SizedBox(height: 14),
+              const _GutterPad(child: MonthlyReportCard()),
               const SizedBox(height: 14),
               _GutterPad(child: _AiInsightsCard(controller: controller)),
               const SizedBox(height: 14),

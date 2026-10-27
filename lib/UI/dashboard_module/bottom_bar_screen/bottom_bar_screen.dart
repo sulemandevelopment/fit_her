@@ -216,10 +216,22 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
       }
     }
 
-    // 3. Reschedule
+    // 3. Skip today's log reminder if she already checked in.
+    bool loggedToday = false;
+    final now = DateTime.now();
+    final todayStr =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final todayResponse =
+        await checkinRepo.getDailyCheckin(accessToken: token, date: todayStr);
+    loggedToday = todayResponse.body != null &&
+        todayResponse.body['status'] == '1' &&
+        todayResponse.body['data'] != null;
+
+    // 4. Reschedule
     await NotificationScheduler.rescheduleAll(
       prefs: prefs,
       weeklyCheckinDone: weeklyDone,
+      dailyLogDoneToday: loggedToday,
     );
     debugPrint('🔔 rescheduleAll completed');
   }

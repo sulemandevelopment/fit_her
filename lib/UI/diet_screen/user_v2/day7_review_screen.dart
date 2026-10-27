@@ -58,6 +58,7 @@ class _Day7ReviewScreenState extends State<Day7ReviewScreen> {
   bool _painReported = false;
   final TextEditingController _painLocationCtrl = TextEditingController();
   int? _satisfaction;
+  bool _showEscalation = false;
 
   @override
   void initState() {
@@ -104,23 +105,53 @@ class _Day7ReviewScreenState extends State<Day7ReviewScreen> {
       satisfaction: _satisfaction,
     );
 
-    final ok = await _ctrl.submit(submission);
-    if (!mounted) return;
-    if (!ok) return;
-
+    final review = await _ctrl.submit(submission);
+    if (!mounted || review == null) return;
+    if (review.flagged) {
+      setState(() => _showEscalation = true);
+      return;
+    }
     Get.back<dynamic>();
-    Get.snackbar(
-      'Thanks!',
-      'Your dietitian will review your feedback.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: _kAccent.withOpacity(0.92),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_showEscalation) {
+      return Scaffold(
+        backgroundColor: _kCream,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Sent to your dietitian',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: _kHeroDark,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'This check-in was sent to your dietitian for a closer look because of pain or severe effects. It is not a diagnosis. If you feel unwell, contact a clinician.',
+                  style: TextStyle(fontSize: 15, height: 1.4, color: _kHeroDark),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Get.back<dynamic>(),
+                    child: const Text('Close'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: _kCream,
       body: SafeArea(

@@ -7,12 +7,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../../UI/workout/exercise_library_screen.dart';
+import '../../../core/movement/class_session_filter.dart';
+import '../../../data/Repos/checkin_repo/checkin_repository.dart';
+import '../../../data/controllers/auth_controller/auth_controller.dart';
+import '../../../data/controllers/consultation_controller/consultation_controller.dart';
 import '../../../data/controllers/home_controller/home_controller.dart';
 import '../../../data/controllers/motivation_controller/motivation_controller.dart';
 import '../../../data/controllers/workout_controller/work_out_controller.dart';
 import '../../../data/models/get_user_plan/get_workout_user_plan_details.dart';
 import '../../../data/services/recommendation_service.dart';
 import '../../../helper/analytics_helper.dart';
+import '../../../values/constants.dart';
 import '../../../utils/app_clock.dart';
 import '../../../utils/slot_input_builder.dart';
 import '../../../utils/slot_ui_state.dart';
@@ -71,6 +77,9 @@ class _WorkOutBottomScreenState extends State<WorkOutBottomScreen>
   final ScrollController _timelineScrollController = ScrollController();
   final GlobalKey _activeSlotKey = GlobalKey();
   bool _hasAutoScrolled = false;
+  String _injuries = '';
+  int? _energy;
+  String? _sessionNote;
 
   // Step 4 sync layers — see [_kHeartbeatInterval] / [_kClockTickerInterval]
   // / [_kStaleAfter] for cadence rationale.
@@ -116,6 +125,7 @@ class _WorkOutBottomScreenState extends State<WorkOutBottomScreen>
     );
 
     WidgetsBinding.instance.addObserver(this);
+    _loadSessionContext();
 
     // Attendance stats power the past-class ✓ checkmark (per-date, not
     // per-slot — a Phase D backend ticket will add per-slot precision).
@@ -323,6 +333,11 @@ class _WorkOutBottomScreenState extends State<WorkOutBottomScreen>
             ),
           ),
           _circleButton(
+            icon: Icons.fitness_center,
+            onTap: () => Get.to(() => const ExerciseLibraryScreen()),
+          ),
+          SizedBox(width: 6.w),
+          _circleButton(
             icon: Icons.chevron_left,
             onTap: () => _navigateWeek(-1),
           ),
@@ -487,16 +502,32 @@ class _WorkOutBottomScreenState extends State<WorkOutBottomScreen>
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 30.h),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (int i = 0; i < slots.length; i++)
-            _buildTimelineRow(
-              slots[i],
-              isLast: i == slots.length - 1,
-              key: (i == activeIndex) ? _activeSlotKey : null,
+          if (_sessionNote != null) ...[
+            Padding(
+              padding: EdgeInsets.only(bottom: 12.h),
+              child: Text(
+                _sessionNote!,
+                style: TextStyle(fontSize: 12.sp, height: 1.35, color: _textMuted),
+              ),
             ),
+          ],
+          ..._timelineChildren(slots, activeIndex),
         ],
       ),
     );
+  }
+
+  List<Widget> _timelineChildren(List<Slot> slots, int activeIndex) {
+    return [
+      for (int i = 0; i < slots.length; i++)
+        _buildTimelineRow(
+          slots[i],
+          isLast: i == slots.length - 1,
+          key: (i == activeIndex) ? _activeSlotKey : null,
+        ),
+    ];
   }
 
   Widget _buildEmptyState() {
@@ -1191,7 +1222,44 @@ class _WorkOutBottomScreenState extends State<WorkOutBottomScreen>
       if (bT == null) return -1;
       return aT.compareTo(bT);
     });
-    return slots;
+    final session = planClassSessions(
+      types: slots.map((s) => s.type).toList(),
+      injuries: _injuries,
+      energy: _energy,
+    );
+    _sessionNote = session.note;
+    return session.indexes.map((i) => slots[i]).toList();
+  }
+
+  Future<void> _loadSessionContext() async {
+    try {
+      if (Get.isRegistered<ConsultationController>()) {
+        final profile = await Get.find<ConsultationController>().loadProfile();
+        final raw = profile?.workoutSection?['injuries'];
+        if (raw is String) _injuries = raw;
+        if (raw is List) _injuries = raw.join(' ');
+      }
+      if (Get.isRegistered<CheckinRepository>() &&
+          Get.isRegistered<AuthController>()) {
+        final token = Get.find<AuthController>()
+                .sharedPreferences
+                .getString(Constants.accessToken) ??
+            '';
+        final now = DateTime.now();
+        final today =
+            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        final response = await Get.find<CheckinRepository>().getDailyCheckin(
+          accessToken: token,
+          date: today,
+        );
+        final body = response.body;
+        if (body is Map && body['data'] is Map) {
+          final level = body['data']['energyLevel'];
+          if (level is num) _energy = level.toInt();
+        }
+      }
+    } catch (_) {}
+    if (mounted) setState(() {});
   }
 
   // ── Resolver bridge ─────────────────────────────────────────────────────

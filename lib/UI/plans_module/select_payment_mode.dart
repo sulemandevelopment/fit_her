@@ -6,7 +6,6 @@ import 'package:fitness_zone_2/data/controllers/auth_controller/auth_controller.
 import 'package:fitness_zone_2/data/controllers/home_controller/home_controller.dart';
 import 'package:fitness_zone_2/widgets/app_bar_widget.dart';
 import 'package:fitness_zone_2/widgets/custom_button.dart';
-import 'package:fitness_zone_2/widgets/toasts.dart';
 
 /// Payment-method picker — V2 redesign.
 ///
@@ -288,6 +287,7 @@ class _DirectPayPhoneDialogContent extends StatefulWidget {
 class _DirectPayPhoneDialogContentState
     extends State<_DirectPayPhoneDialogContent> {
   late TextEditingController _phoneController;
+  String? _phoneError;
 
   @override
   void initState() {
@@ -305,12 +305,13 @@ class _DirectPayPhoneDialogContentState
     final raw = _phoneController.text.trim();
     final normalized = HomeController.normalizeMsisdn(raw);
     if (normalized == null || !HomeController.isValidMsisdn(normalized)) {
-      CustomToast.failToast(
-        msg:
-            "Please enter a valid Pakistan mobile number (03xxxxxxxxx, 11 digits).",
-      );
+      setState(() {
+        _phoneError =
+            'Please enter a valid Pakistan mobile number (03xxxxxxxxx, 11 digits).';
+      });
       return;
     }
+    setState(() => _phoneError = null);
     Get.back();
     Get.find<HomeController>().getDirectPayPaymentLink(
       widget.price,
@@ -335,10 +336,18 @@ class _DirectPayPhoneDialogContentState
             controller: _phoneController,
             keyboardType: TextInputType.phone,
             maxLength: 11,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: "03xxxxxxxxx",
               labelText: "Mobile number",
-              border: OutlineInputBorder(),
+              errorText: _phoneError,
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: _phoneError == null
+                      ? const Color(0xFFB7C7B4)
+                      : const Color(0xFFD64545),
+                ),
+              ),
               counterText: "",
             ),
           ),

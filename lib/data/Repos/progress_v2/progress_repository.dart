@@ -97,6 +97,16 @@ class ProgressRepository extends GetxService {
     return HydrationData.fromJson(data);
   }
 
+  /// 2NH10 — last 7 days symptom pattern (rules summary).
+  Future<Map<String, dynamic>?> getWeeklyPattern() async {
+    return _getData(Constants.progressWeeklyPattern, period: 'week');
+  }
+
+  /// 2NH13 — last 30 days body and nutrition report (rules and charts).
+  Future<Map<String, dynamic>?> getMonthlyReport() async {
+    return _getData(Constants.progressMonthlyReport, period: 'month');
+  }
+
   /// B5 — 4 symptom rows with period-over-period deltas.
   Future<SymptomsData?> getSymptoms({required String period, String? asOf}) async {
     final data = await _getData(Constants.progressSymptoms, period: period, asOf: asOf);

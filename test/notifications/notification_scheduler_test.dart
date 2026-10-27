@@ -62,6 +62,16 @@ void main() {
     });
   });
 
+  group('NotificationScheduler.dailyLogReminderHour', () {
+    test('8 PM is outside the default quiet window', () {
+      expect(NotificationScheduler.dailyLogReminderHour('22:00', '07:00'), 20);
+    });
+
+    test('returns null when 8 PM is inside quiet hours', () {
+      expect(NotificationScheduler.dailyLogReminderHour('19:00', '21:00'), isNull);
+    });
+  });
+
   group('NotificationScheduler.nextOccurrence', () {
     test('time later today returns today at that time', () {
       final now = tz.TZDateTime(tz.local, 2026, 7, 21, 6, 0);

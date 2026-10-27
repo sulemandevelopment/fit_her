@@ -72,6 +72,10 @@ class Constants {
   static const String progressGlance = '/users/progress/glance';
   static const String progressHydration = '/users/progress/hydration';
   static const String progressSymptoms = '/users/progress/symptoms';
+  static const String progressWeeklyPattern = '/users/progress/weekly-pattern';
+  static const String progressMonthlyReport = '/users/progress/monthly-report';
+  static const String subscriptionTrial = '/users/subscription-trial';
+  static const String exercises = '/users/exercises';
   static const String progressInsightsHub = '/users/progress/insights/hub';
   // Phase E — minimal feature-flag toggle endpoint (POST). Only flags in
   // the backend allow-list can be flipped from the client.

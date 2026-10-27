@@ -35,6 +35,7 @@ class _NotificationSettingsScreenState
   int _missedRecovery = 1;
   int _trainerCancelled = 1;
   int _weeklyCheckin = 1;
+  int _dailyLog = 1;
   int _dietUpdates = 1;
   String _quietStart = '22:00';
   String _quietEnd = '07:00';
@@ -69,6 +70,7 @@ class _NotificationSettingsScreenState
           _missedRecovery = data['missedRecovery'] ?? 1;
           _trainerCancelled = data['trainerCancelled'] ?? 1;
           _weeklyCheckin = data['weeklyCheckin'] ?? 1;
+          _dailyLog = data['dailyLog'] ?? 1;
           _dietUpdates = data['dietUpdates'] ??
               (authController.sharedPreferences.getBool('pref_dietUpdates') == false ? 0 : 1);
           _quietStart = data['quietStart'] ?? '22:00';
@@ -101,6 +103,7 @@ class _NotificationSettingsScreenState
       'missedRecovery': _missedRecovery,
       'trainerCancelled': _trainerCancelled,
       'weeklyCheckin': _weeklyCheckin,
+      'dailyLog': _dailyLog,
       'dietUpdates': _dietUpdates,
       'quietStart': _quietStart,
       'quietEnd': _quietEnd,
@@ -139,9 +142,20 @@ class _NotificationSettingsScreenState
       }
     }
 
+    bool loggedToday = false;
+    final now = DateTime.now();
+    final todayStr =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final todayResponse =
+        await checkinRepo.getDailyCheckin(accessToken: token, date: todayStr);
+    loggedToday = todayResponse.body != null &&
+        todayResponse.body['status'] == '1' &&
+        todayResponse.body['data'] != null;
+
     await NotificationScheduler.rescheduleAll(
       prefs: body,
       weeklyCheckinDone: weeklyDone,
+      dailyLogDoneToday: loggedToday,
     );
   }
 
@@ -165,6 +179,9 @@ class _NotificationSettingsScreenState
           break;
         case 'weeklyCheckin':
           _weeklyCheckin = value ? 1 : 0;
+          break;
+        case 'dailyLog':
+          _dailyLog = value ? 1 : 0;
           break;
         case 'dietUpdates':
           _dietUpdates = value ? 1 : 0;
@@ -273,6 +290,14 @@ class _NotificationSettingsScreenState
                     description: 'Immediate alert if your trainer cancels',
                     value: _trainerCancelled == 1,
                     onChanged: (v) => _onToggle('trainerCancelled', v),
+                  ),
+                  _buildToggleRow(
+                    icon: Icons.edit_note_outlined,
+                    title: 'Daily log reminder',
+                    description:
+                        '8 PM reminder to check in. Skipped during quiet hours and after you log.',
+                    value: _dailyLog == 1,
+                    onChanged: (v) => _onToggle('dailyLog', v),
                   ),
                   _buildToggleRow(
                     icon: Icons.calendar_today_outlined,

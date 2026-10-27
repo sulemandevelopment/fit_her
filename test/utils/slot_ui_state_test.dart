@@ -58,22 +58,22 @@ void main() {
   });
 
   group('upcoming — before start', () {
-    test('16+ minutes before start -> upcomingFar', () {
+    test('21+ minutes before start -> upcomingFar', () {
       expect(
         resolveSlotUIState(
           slot: slotWith(),
-          now: start.subtract(const Duration(minutes: 16)),
+          now: start.subtract(const Duration(minutes: 21)),
           user: defaultUser,
         ),
         SlotUIState.upcomingFar,
       );
     });
 
-    test('exactly 15 minutes before start -> upcomingSoon (boundary)', () {
+    test('exactly 20 minutes before start -> upcomingSoon (boundary)', () {
       expect(
         resolveSlotUIState(
           slot: slotWith(),
-          now: start.subtract(const Duration(minutes: 15)),
+          now: start.subtract(const Duration(minutes: 20)),
           user: defaultUser,
         ),
         SlotUIState.upcomingSoon,

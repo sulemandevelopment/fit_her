@@ -98,6 +98,7 @@ class CycleInfo {
   final String? phaseLabel;
   final int? periodInDays;
   final int? averageCycleLength;
+  final String? expectNote;
 
   const CycleInfo({
     this.dataProvided,
@@ -106,6 +107,7 @@ class CycleInfo {
     this.phaseLabel,
     this.periodInDays,
     this.averageCycleLength,
+    this.expectNote,
   });
 
   factory CycleInfo.fromJson(Map<String, dynamic> json) => CycleInfo(
@@ -115,6 +117,7 @@ class CycleInfo {
         phaseLabel: json['phaseLabel'] as String?,
         periodInDays: _toInt(json['periodInDays']),
         averageCycleLength: _toInt(json['averageCycleLength']),
+        expectNote: json['expectNote'] as String?,
       );
 }
 

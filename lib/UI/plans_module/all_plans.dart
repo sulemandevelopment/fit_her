@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../data/models/get_user_plan/get_user_plan.dart';
+import '../../widgets/plans/subscription_trial_card.dart';
 
 class OurPlansScreen extends StatelessWidget {
   OurPlansScreen({super.key});
@@ -79,10 +80,15 @@ class OurPlansScreen extends StatelessWidget {
     }
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-      itemCount: plans.length,
+      itemCount: plans.length + 1,
       separatorBuilder: (_, __) => const SizedBox(height: 14),
       itemBuilder: (context, index) {
-        final plan = plans[index];
+        if (index == 0) {
+          return SubscriptionTrialCard(
+            onContinue: () => _onSubscribe(plans.first),
+          );
+        }
+        final plan = plans[index - 1];
         if (plan.countries != null &&
             plan.countries!.isNotEmpty &&
             plan.countries!.first.duration!.isNotEmpty) {

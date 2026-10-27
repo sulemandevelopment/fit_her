@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
-import '../../../widgets/toasts.dart';
 import '../../../helper/analytics_helper.dart';
 
 class SignUpNewUser extends StatefulWidget {
@@ -28,6 +27,10 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
   String _completePhoneNumber = '';
   bool _isPhoneValid = false;
   bool _obscurePassword = true;
+  String? _nameError;
+  String? _emailError;
+  String? _phoneError;
+  String? _passwordError;
 
   static final RegExp _emailRegex = RegExp(
     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
@@ -259,6 +262,7 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
                               _buildTextField(
                                 controller: _fullNameController,
                                 hint: 'Ayesha Khan',
+                                error: _nameError,
                                 keyboardType: TextInputType.name,
                                 inputFormatters: [
                                   FilteringTextInputFormatter
@@ -274,6 +278,7 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
                                 controller:
                                     authController.emailNameController,
                                 hint: 'you@email.com',
+                                error: _emailError,
                                 keyboardType: TextInputType.emailAddress,
                                 inputFormatters: [
                                   FilteringTextInputFormatter
@@ -305,6 +310,7 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
                               showDropdownIcon: true,
                               decoration: InputDecoration(
                                 counterText: '',
+                                errorText: _phoneError,
                                 hintText: '300 1234567',
                                 hintStyle: TextStyle(
                                   fontFamily: 'Poppins',
@@ -375,8 +381,11 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
                                     horizontal: 16.w, vertical: 14.h),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: const BorderSide(
-                                      color: _inputBorder, width: 1.2),
+                                  borderSide: BorderSide(
+                                      color: _passwordError == null
+                                          ? _inputBorder
+                                          : const Color(0xFFD64545),
+                                      width: 1.2),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
@@ -399,6 +408,18 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
                                 ),
                               ),
                             ),
+                            if (_passwordError != null)
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.h, left: 4.w),
+                                child: Text(
+                                  _passwordError!,
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 11.sp,
+                                    color: const Color(0xFFD64545),
+                                  ),
+                                ),
+                              ),
                             SizedBox(height: 28.h),
 
                             // ── Create account button ──
@@ -525,40 +546,62 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
+    String? error,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
     List<TextInputFormatter>? inputFormatters,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      inputFormatters: inputFormatters,
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 14.sp,
-        color: _textDark,
-      ),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 13.sp,
-          color: _placeholder,
+    final borderColor = error == null ? _inputBorder : const Color(0xFFD64545);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          inputFormatters: inputFormatters,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 14.sp,
+            color: _textDark,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13.sp,
+              color: _placeholder,
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: borderColor, width: 1.2),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(
+                color: error == null ? _green : const Color(0xFFD64545),
+                width: 1.5,
+              ),
+            ),
+          ),
         ),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: _inputBorder, width: 1.2),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: _green, width: 1.5),
-        ),
-      ),
+        if (error != null)
+          Padding(
+            padding: EdgeInsets.only(top: 4.h, left: 4.w),
+            child: Text(
+              error,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 11.sp,
+                color: const Color(0xFFD64545),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -572,29 +615,25 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
     final password = authController.passwordController.text.trim();
     final phone = _completePhoneNumber;
 
-    // Split full name into first + last
+    String? nameError;
+    String? emailError;
+    String? phoneError;
+    String? passwordError;
     String firstName = '';
     String lastName = '';
     if (!widget.isSocial) {
       if (fullName.isEmpty) {
-        CustomToast.failToast(msg: 'Please enter your name');
-        return;
+        nameError = 'Please enter your name';
+      } else {
+        final nameParts = fullName.split(' ');
+        firstName = nameParts.first;
+        lastName =
+            nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
       }
-      final nameParts = fullName.split(' ');
-      firstName = nameParts.first;
-      lastName =
-          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-
       if (email.isEmpty) {
-        CustomToast.failToast(msg: 'Please enter your email');
-        return;
-      }
-      if (!_emailRegex.hasMatch(email)) {
-        CustomToast.failToast(msg: 'Please provide a valid email address');
-        await AnalyticsHelper.trackError('validation_error',
-            errorMessage: 'Invalid email format',
-            screenName: 'signup_screen');
-        return;
+        emailError = 'Please enter your email';
+      } else if (!_emailRegex.hasMatch(email)) {
+        emailError = 'Please provide a valid email address';
       }
     } else {
       firstName = authController.firstNameController.text.trim();
@@ -602,12 +641,27 @@ class _SignUpNewUserState extends State<SignUpNewUser> {
     }
 
     if (!_isPhoneValid) {
-      CustomToast.failToast(msg: 'Please enter a valid phone number');
-      return;
+      phoneError = 'Please enter a valid phone number';
+    }
+    if (password.length < 6) {
+      passwordError = 'Password must be at least 6 characters';
     }
 
-    if (password.length < 6) {
-      CustomToast.failToast(msg: 'Password must be at least 6 characters');
+    setState(() {
+      _nameError = nameError;
+      _emailError = emailError;
+      _phoneError = phoneError;
+      _passwordError = passwordError;
+    });
+    if (nameError != null ||
+        emailError != null ||
+        phoneError != null ||
+        passwordError != null) {
+      if (emailError == 'Please provide a valid email address') {
+        await AnalyticsHelper.trackError('validation_error',
+            errorMessage: 'Invalid email format',
+            screenName: 'signup_screen');
+      }
       return;
     }
 
