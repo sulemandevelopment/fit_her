@@ -425,6 +425,14 @@ class NotificationServices {
       return;
     }
 
+    // X7 — Missed session recovery push opens Workout schedule (sheet actions there).
+    if (message.data["type"] == "missedRecovery") {
+      Future.delayed(const Duration(milliseconds: 1200), () {
+        Get.offAll(() => BottomBarScreen(index: 1));
+      });
+      return;
+    }
+
     if (message.data["type"] == "planDeliveryReminder") {
       final isDietitian = Get.isRegistered<AuthController>() &&
           Get.find<AuthController>().loginAsA.value == Constants.dietitian;

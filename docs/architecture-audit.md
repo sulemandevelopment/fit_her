@@ -598,6 +598,15 @@ flowchart TD
 
 ---
 
+## Delivery 1 implementation log (incremental)
+
+| Date | IDs | Status | Notes |
+|------|-----|--------|-------|
+| Oct 2026 | 1NH1, 1NH2, 1NH3–5 | Partially Complete | Backend migration + API; Flutter quick check-in; run migration on staging |
+| Oct 2026 | X7 | Partially Complete | Missed sheet actions + F-02 stats; guided recovery workout deferred to 2M5/1M3 |
+
+---
+
 ## 18. Audit conclusion
 
 The codebase is a ** viable production base ** with real users on live classes, diet plans, community, and subscriptions, but it is ** not aligned with Delivery 1 completion** in the PDF until **payment slip (1P5)**, **trial model (1P8)**, **daily logging (1NH1–2)**, **security on appointments/admin**, and **foundations (X1/X5/X3/X8)** are addressed. 

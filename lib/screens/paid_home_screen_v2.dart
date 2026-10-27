@@ -17,6 +17,7 @@ import '../widgets/paid_home_v2/paid_hero.dart';
 import '../widgets/paid_home_v2/paid_insight_card.dart';
 import '../widgets/paid_home_v2/paid_stats_row.dart'
     show PaidStatsRow;
+import '../widgets/paid_home_v2/quick_checkin_banner.dart';
 import '../widgets/paid_home_v2/today_insights_box.dart';
 import '../widgets/paid_home_v2/talk_to_expert_card.dart';
 import '../widgets/v2/plan_expiry_banner.dart';
@@ -406,6 +407,7 @@ class _PaidHomeScreenV2State extends State<PaidHomeScreenV2>
                       TalkToExpertCard(key: ValueKey('expert_$_refreshGen')),
                       PaidInsightCard(dashboard: dashboard),
                       const SizedBox(height: 8),
+                      QuickCheckinBanner(dashboard: dashboard),
                       // "Today's insights" box: feeling, water and sleep.
                       // Inputs stay open until all three are logged, then
                       // it folds into three tiles. The soft glow still

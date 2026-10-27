@@ -270,23 +270,33 @@ class Insight {
 class TodayCheckin {
   final String? date;
   final int? moodLevel;
+  final int? energyLevel;
+  final int? stressLevel;
   final double? sleepHours;
-  // Phase A always returns an empty array. Kept as dynamic list so future
-  // symptom-schema work doesn't require a model migration here.
+  final int? sleepQuality;
   final List<dynamic> symptoms;
+  final bool quickCheckinComplete;
 
   const TodayCheckin({
     this.date,
     this.moodLevel,
+    this.energyLevel,
+    this.stressLevel,
     this.sleepHours,
+    this.sleepQuality,
     this.symptoms = const [],
+    this.quickCheckinComplete = false,
   });
 
   factory TodayCheckin.fromJson(Map<String, dynamic> json) => TodayCheckin(
         date: json['date'] as String?,
         moodLevel: _toInt(json['moodLevel']),
+        energyLevel: _toInt(json['energyLevel']),
+        stressLevel: _toInt(json['stressLevel']),
         sleepHours: _toDouble(json['sleepHours']),
+        sleepQuality: _toInt(json['sleepQuality']),
         symptoms: (json['symptoms'] as List?) ?? const [],
+        quickCheckinComplete: json['quickCheckinComplete'] == true,
       );
 }
 

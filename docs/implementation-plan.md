@@ -72,7 +72,7 @@ PDF status: **To check** (audits + fixes, not net-new features).
 | X3 | Workout player with mark done | Missing | |
 | X4 | Tier counters & checks | Partial | Plan status; monthly counters/freeze incomplete |
 | X5 | Video hosting & upload tools | Missing | ~570MB bundle; admin upload tooling |
-| X7 | Missed session sheet + actions | Missing | Agency F-01/F-02 |
+| X7 | Missed session sheet + actions | Partial | F-02 real duration/calories; Join next / Find similar; `missedRecovery` tap → Workout tab; **2M5** recovery workout still Blocked (needs **1M3**) |
 | X8 | Animated exercise clips | Blocked | Content quote; needs X5 |
 
 *(X6 not used in build list.)*
@@ -83,11 +83,11 @@ PDF status: **To check** (audits + fixes, not net-new features).
 
 | ID | Feature | Status | Notes |
 |----|---------|--------|-------|
-| 1NH1 | Symptom logging, basic (daily) | Partial | Day 15/30 forms only |
-| 1NH2 | Quick daily check-in | Missing | `checkin_repository` exists; no unified 4-field screen |
-| 1NH3 | Energy logging | Partial | Part of check-in; confirm single source of truth |
-| 1NH4 | Stress logging | Partial | Part of check-in |
-| 1NH5 | Sleep logging | Partial | Home shows sleep; PDF To confirm |
+| 1NH1 | Symptom logging, basic (daily) | Partial | `symptomsJson` + quick check-in UI; dedicated history TBD |
+| 1NH2 | Quick daily check-in | Partial | `QuickDailyCheckinScreen`; server `quickCheckinComplete` |
+| 1NH3 | Energy logging | Partial | 1–5 scale in quick check-in |
+| 1NH4 | Stress logging | Partial | 1–5 + cause chips when high |
+| 1NH5 | Sleep logging | Partial | Hours + rested quality in quick check-in; home tiles still separate |
 | 1NH6 | Water intake logging | Partial | PDF To confirm |
 | 1NH7 | Pakistani food database | Missing | Dietitian-reviewed content |
 | 1NH8 | AI meal photo logging, capped (Free) | Partial + Deferred AI | Keep name/Spoonacular flow; monthly cap UI + tier gate; no fake vision |
@@ -336,11 +336,15 @@ Order: 1NH1→1NH6, 1NH7 → 1NH15 → 1M1/1M2 → X1/X2/X5 → X3/X8/1M3/1M4 �
 | Oct 2026 | Auth — login | Yes | Inline validation, scroll-to-error, `FhTextField`; no field toasts |
 | Oct 2026 | Payments — slip upload (1P5) | Partial | Inline slip error, picker race fix, loading state, `FhDialog` success; E2E device test pending |
 | Oct 2026 | Backend — appointments P0 | Partial | Auth on create/read/delete/list; ownership checks on create/getById/dietitian list |
-| Oct 2026 | Onboarding / home / plans shell | No | Next screen group |
+| Oct 2026 | **1NH1–1NH2 + 1NH3–5** daily log | Partial | Migration `20261028130000`, stress/symptoms API, `QuickDailyCheckinScreen`, home banner; 48h edit = today-only server rule |
+| Oct 2026 | **X7** missed session sheet | Partial | `slot_session_stats`, `MissedSessionRecoveryActions`, dashboard calorie estimate; tests: backend 2 pass, Flutter 4 pass |
+| Oct 2026 | Onboarding / plans shell | No | Next screen group |
 | Oct 2026 | 1P8 trial | No | Next milestone |
-| Oct 2026 | Day7 / X7 | No | Next milestone |
+| Oct 2026 | Day7 escalation UI | No | Next milestone |
 
-**Tests:** `test/core/fh_validators_test.dart` — 5 passed. Analyzer clean on touched files (warnings/info only).
+**Tests:** `test/core/fh_validators_test.dart` — 5 passed; `partner_backend/test/dailyCheckinSymptoms.test.js` — 2 passed. Analyzer clean on touched files (warnings/info only).
+
+**Deploy note:** Run migration `20261028130000-add-stress-symptoms-to-daily-checkins.js` on staging/production before release.
 
 ---
 

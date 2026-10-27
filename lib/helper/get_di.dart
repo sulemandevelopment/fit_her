@@ -16,6 +16,7 @@ import 'package:fitness_zone_2/data/controllers/meal_log_controller/meal_log_con
 import 'package:fitness_zone_2/data/controllers/diet_contoller/diet_controller.dart';
 import 'package:fitness_zone_2/data/controllers/cycle_theme_controller/cycle_theme_controller.dart';
 import 'package:fitness_zone_2/data/controllers/paid_home_controller/paid_home_controller.dart';
+import 'package:fitness_zone_2/data/controllers/daily_log_controller/daily_log_controller.dart';
 import 'package:fitness_zone_2/data/controllers/plan_controller/plan_controller.dart';
 import 'package:fitness_zone_2/data/controllers/post_controller.dart';
 import 'package:fitness_zone_2/data/controllers/progress_controller/progress_controller.dart';
@@ -120,6 +121,13 @@ Future init() async {
   Get.lazyPut(
     () => PaidHomeController(
       homeRepo: Get.find(),
+      checkinRepo: Get.find(),
+      sharedPreferences: sharedPreferences,
+    ),
+    fenix: true,
+  );
+  Get.lazyPut(
+    () => DailyLogController(
       checkinRepo: Get.find(),
       sharedPreferences: sharedPreferences,
     ),

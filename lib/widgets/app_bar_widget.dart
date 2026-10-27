@@ -6,7 +6,9 @@ import 'package:fitness_zone_2/data/controllers/zoom_controller.dart';
 import 'package:fitness_zone_2/data/services/youtube_tutorial_service.dart';
 import 'package:fitness_zone_2/utils/app_clock.dart';
 import 'package:fitness_zone_2/utils/slot_input_builder.dart';
+import 'package:fitness_zone_2/utils/slot_session_stats.dart';
 import 'package:fitness_zone_2/utils/slot_ui_state.dart';
+import 'package:fitness_zone_2/widgets/workout/missed_session_recovery_actions.dart';
 import 'package:fitness_zone_2/widgets/review_bottom_sheet.dart';
 import 'package:fitness_zone_2/widgets/toasts.dart';
 import 'package:flutter/cupertino.dart';
@@ -428,6 +430,15 @@ class HelpingWidgets {
       blockReason: blockReasonFor(access),
     );
 
+    final durationMin =
+        slot != null ? slotDurationMinutes(slot, anchor) : null;
+    final caloriesEst = slot != null
+        ? estimateClassCalories(
+            durationMinutes: durationMin,
+            slotType: slot.type ?? slot.level,
+          )
+        : null;
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -454,43 +465,59 @@ class HelpingWidgets {
                             color: Colors.redAccent, fontWeight: FontWeight.w600)),
                   ),
                 if (state == SlotUIState.endedNotAttended)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: Text('You missed this session.',
-                        style: TextStyle(
-                            color: Colors.grey, fontWeight: FontWeight.w600)),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'You missed this session.',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Pick your next class — consistency matters more than perfection.',
+                          style: textTheme.bodySmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 const SizedBox(height: 16),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Column(
                       children: [
-                        Icon(Icons.access_time, color: Colors.green, size: 32),
-                        SizedBox(height: 8),
+                        const Icon(Icons.access_time,
+                            color: Colors.green, size: 32),
+                        const SizedBox(height: 8),
                         Text(
-                          '50 Min',
-                          style: TextStyle(
+                          formatDurationLabel(durationMin),
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Time'),
+                        const Text('Time'),
                       ],
                     ),
                     Column(
                       children: [
-                        Icon(Icons.local_fire_department,
+                        const Icon(Icons.local_fire_department,
                             color: Colors.green, size: 32),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          '254',
-                          style: TextStyle(
+                          formatCaloriesLabel(caloriesEst),
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Calories'),
+                        const Text('Calories (est.)'),
                       ],
                     ),
                   ],
@@ -515,8 +542,12 @@ class HelpingWidgets {
                 ),
                 ListTile(
                   leading: const Icon(Icons.fitness_center),
-                  title: Text(slot?.level ?? 'High Intensity Workout Session',
-                      style: textTheme.bodySmall),
+                  title: Text(
+                    slot?.type ??
+                        slot?.level ??
+                        'Workout session',
+                    style: textTheme.bodySmall,
+                  ),
                   visualDensity: const VisualDensity(vertical: -4),
                 ),
                 ListTile(
@@ -530,6 +561,15 @@ class HelpingWidgets {
                   visualDensity: const VisualDensity(vertical: -4),
                 ),
                 const SizedBox(height: 16),
+                if (state == SlotUIState.endedNotAttended && slot != null)
+                  MissedSessionRecoveryActions(
+                    parentContext: context,
+                    missedSlot: slot,
+                    missedAnchor: anchor,
+                    homeController: homeController,
+                  ),
+                if (state == SlotUIState.endedNotAttended && slot != null)
+                  const SizedBox(height: 12),
                 if (presentation.appearance != SlotButtonAppearance.hidden)
                   _buildPopupActionButton(
                     context: sheetContext,
