@@ -925,6 +925,24 @@ class HomeRepo extends GetxService {
     );
   }
 
+  Future<Response> getFoodProfile({required String accessToken}) async {
+    return await apiProvider.getData(
+      Constants.foodProfile,
+      headers: {"accessToken": accessToken},
+    );
+  }
+
+  Future<Response> checkFoodAgainstProfile({
+    required String accessToken,
+    required String foodName,
+  }) async {
+    return await apiProvider.postData(
+      '${Constants.foodProfile}/check',
+      body: {'foodName': foodName},
+      headers: {"accessToken": accessToken, "Content-Type": "application/json"},
+    );
+  }
+
   /// Per-step PATCH auto-save (Decision 5). `body` is any subset of
   /// editable fields plus optional `step`/`isComplete` keys.
   ///

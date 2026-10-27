@@ -11,6 +11,7 @@ import 'package:fitness_zone_2/data/controllers/diet_plan_user_controller/diet_p
 import 'package:fitness_zone_2/data/controllers/day7_review_controller/day7_review_controller.dart';
 import 'package:fitness_zone_2/data/api_provider/chat_api_provider.dart';
 import 'package:fitness_zone_2/data/controllers/consultation_controller/consultation_controller.dart';
+import 'package:fitness_zone_2/data/controllers/food_profile_controller/food_profile_controller.dart';
 import 'package:fitness_zone_2/data/controllers/dietitian_dashboard_controller/dietitian_dashboard_controller.dart';
 import 'package:fitness_zone_2/data/controllers/meal_log_controller/meal_log_controller.dart';
 import 'package:fitness_zone_2/data/controllers/diet_contoller/diet_controller.dart';
@@ -135,6 +136,13 @@ Future init() async {
   );
   Get.lazyPut(
     () => ConsultationController(
+      homeRepo: Get.find(),
+      sharedPreferences: sharedPreferences,
+    ),
+    fenix: true,
+  );
+  Get.lazyPut(
+    () => FoodProfileController(
       homeRepo: Get.find(),
       sharedPreferences: sharedPreferences,
     ),

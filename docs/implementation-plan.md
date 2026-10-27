@@ -140,7 +140,7 @@ PDF status: **To check** (audits + fixes, not net-new features).
 
 | ID | Feature | Status | Notes |
 |----|---------|--------|-------|
-| 2NH1 | Food preferences and allergies filter | Missing | |
+| 2NH1 | Food preferences and allergies filter | Partial | `foodProfileFilter`, `/users/food-profile`, settings screen, meal plan flags; keyword rules not dietitian-reviewed list |
 | 2NH2 | Phase aware food scoring on meals | Missing | Rules-based; needs meal logging quality |
 | 2NH3 | Automatic weekly diet plan adjustment | Deferred AI | |
 | 2NH4 | AI grocery list with phase swaps | Deferred AI | |
@@ -338,6 +338,7 @@ Order: 1NH1→1NH6, 1NH7 → 1NH15 → 1M1/1M2 → X1/X2/X5 → X3/X8/1M3/1M4 �
 | Oct 2026 | Backend — appointments P0 | Partial | Auth on create/read/delete/list; ownership checks on create/getById/dietitian list |
 | Oct 2026 | **1NH1–1NH2 + 1NH3–5** daily log | Partial | Migration `20261028130000`, stress/symptoms API, `QuickDailyCheckinScreen`, home banner; 48h edit = today-only server rule |
 | Oct 2026 | **X7** missed session sheet | Partial | `slot_session_stats`, `MissedSessionRecoveryActions`, dashboard calorie estimate; tests: backend 2 pass, Flutter 4 pass |
+| Oct 2026 | **2NH1** food prefs & allergies | Partial | Backend filter + API; `FoodPreferencesScreen`; meal card banners; tests 3+2 pass |
 | Oct 2026 | Onboarding / plans shell | No | Next screen group |
 | Oct 2026 | 1P8 trial | No | Next milestone |
 | Oct 2026 | Day7 escalation UI | No | Next milestone |

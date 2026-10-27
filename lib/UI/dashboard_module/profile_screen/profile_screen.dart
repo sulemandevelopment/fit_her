@@ -1,5 +1,6 @@
 import 'package:fitness_zone_2/UI/auth_module/choose_any_one/choose_any_one.dart';
 import 'package:fitness_zone_2/UI/auth_module/cycle_settings_screen.dart';
+import 'package:fitness_zone_2/UI/dashboard_module/profile_screen/food_preferences_screen.dart';
 import 'package:fitness_zone_2/UI/dashboard_module/profile_screen/notification_settings_screen.dart';
 import 'package:fitness_zone_2/UI/dashboard_module/profile_screen/add_plan_diet.dart';
 import 'package:fitness_zone_2/UI/dashboard_module/profile_screen/update_profile.dart';
@@ -89,6 +90,39 @@ class ProfileScreen extends StatelessWidget {
                                 SizedBox(width: 10.w),
                                 Text(
                                   'Cycle Data',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: MyColors.textColor,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10.h),
+                            Divider(height: 1.h, color: Colors.black.withOpacity(0.2)),
+                          ],
+                        ),
+                      ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                fromWelcomeScreen
+                    ? const SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () {
+                          Get.to(() => const FoodPreferencesScreen());
+                        },
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.restaurant_menu,
+                                    color: MyColors.buttonColor, size: 20.sp),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  'Food preferences & allergies',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     color: MyColors.textColor,

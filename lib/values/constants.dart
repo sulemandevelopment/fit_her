@@ -221,6 +221,7 @@ class Constants {
 
   // ── Consultation flow (Phase 1B endpoints) ─────────────────────────
   static const String preConsultationProfile = "/users/pre-consultation";
+  static const String foodProfile = "/users/food-profile";
   static const String mealLogs = "/users/meal-logs";
   static const String day7Review = "/users/day7-review";
   static const String progressSubmission = "/users/progress";

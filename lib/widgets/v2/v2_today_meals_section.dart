@@ -10,6 +10,7 @@ import '../../data/controllers/day7_review_controller/day7_review_controller.dar
 import '../../data/controllers/diet_plan_user_controller/diet_plan_user_controller.dart';
 import '../../data/models/diet_plan_v2/diet_plan_v2_models.dart';
 import '../../data/models/diet_plan_v2/meal_log_v2.dart';
+import '../nutrition/food_profile_conflict_banner.dart';
 import 'v2_bottom_sheet.dart';
 import 'v2_buttons.dart';
 import 'v2_day_strip.dart';
@@ -1081,6 +1082,7 @@ class _MealCard extends StatelessWidget {
                               height: 1.35,
                             ),
                           ),
+                          FoodProfileConflictBanner(foodName: meal.foodName),
                           if (tip.isNotEmpty) ...[
                             SizedBox(height: 8.h),
                             Container(

@@ -604,6 +604,7 @@ flowchart TD
 |------|-----|--------|-------|
 | Oct 2026 | 1NH1, 1NH2, 1NH3–5 | Partially Complete | Backend migration + API; Flutter quick check-in; run migration on staging |
 | Oct 2026 | X7 | Partially Complete | Missed sheet actions + F-02 stats; guided recovery workout deferred to 2M5/1M3 |
+| Oct 2026 | 2NH1 | Partially Complete | Rules-based allergy/preference filter; UI in profile + diet meals |
 
 ---
 
