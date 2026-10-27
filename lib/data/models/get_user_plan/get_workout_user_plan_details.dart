@@ -102,6 +102,13 @@ class Slot {
   String? status;
   bool? isTrainerJoined;
 
+  /// Display name for analytics / join flows. Derived from [trainer].
+  String? get trainerName {
+    if (trainer == null) return null;
+    final name = '${trainer!.firstName} ${trainer!.lastName}'.trim();
+    return name.isEmpty ? null : name;
+  }
+
   Slot(
       {required this.id,
       required this.start,

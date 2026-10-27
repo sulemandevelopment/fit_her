@@ -83,7 +83,9 @@ dependencies:
   socket_io_client: ^3.1.2
   flutter_inappwebview: ^6.1.5  #  uni_links: ^0.5.1
   youtube_player_flutter: ^9.1.2
-  youtube_player_iframe: ^4.0.4
+  # 5.x pulls youtube_player_iframe_web 3.x (dart:ui_web) — required for
+  # Flutter 3.47+ web builds (4.x crashes on ui.platformViewRegistry).
+  youtube_player_iframe: ^5.2.1
   country_picker: ^2.0.26
   flutter_timezone: ^3.0.1
   # Phase F.3 — IANA zone database. flutter_timezone above only returns
@@ -117,6 +119,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+# image 4.11 (pulled by pdf) needs ZLibDecoder.decodeLazy from archive >= 4.5.
+dependency_overrides:
+  archive: ^4.5.2
 
 flutter:
 

@@ -61,4 +61,13 @@ class AppColors {
   static const Color limeGreen = Color(0xFFB5FB1E);         // was: green100 (1 use)
   static const Color mintGreen = Color.fromARGB(255, 129, 248, 139); // was: green50 (1 use)
   static const Color offWhite = Color(0xFFF1F8FF);          // was: white200 (1 use)
+
+  // ─── Auth & marketing surfaces ───────────────────────────
+  static const Color brandSoftBackground = Color(0xFFEAF7E4);
+  static const Color brandBlob = Color(0xFFC8E8C0);
+  static const Color brandSheetBorder = Color(0xFFD8EDD4);
+  static const Color brandTextDark = Color(0xFF163220);
+  static const Color brandTextMuted = Color(0xFF7B947A);
+  static const Color brandLabel = Color(0xFF5A7A56);
+  static const Color brandPrimaryButton = Color(0xFF6DC55A);
 }

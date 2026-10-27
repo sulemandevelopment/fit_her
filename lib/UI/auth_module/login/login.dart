@@ -8,7 +8,9 @@ import '../../../data/controllers/home_controller/home_controller.dart';
 import '../../../helper/analytics_helper.dart';
 import '../../../values/constants.dart';
 import '../../../values/my_imgs.dart';
-import '../../../widgets/toasts.dart';
+import '../../../core/forms/fh_form_utils.dart';
+import '../../../core/forms/fh_validators.dart';
+import '../../../widgets/design_system/design_system.dart';
 import '../managePassword/forgot_password/enter_email.dart';
 import '../sign_up_screen/signup_screen_user.dart';
 
@@ -47,7 +49,6 @@ class _LoginState extends State<Login> {
   static const Color _textSub = Color(0xFF7B947A);
   static const Color _label = Color(0xFF5A7A56);
   static const Color _inputBorder = Color(0xFFE2E8F0);
-  static const Color _placeholder = Color(0xFF9CA3AF);
   static const Color _primaryGreen = Color(0xFF6DC55A);
   static const Color _dividerLine = Color(0xFFE5F1E0);
   static const Color _dividerText = Color(0xFF9AB09A);
@@ -59,10 +60,25 @@ class _LoginState extends State<Login> {
   // pattern already used on the sign-up screen — was missing here).
   bool _obscurePassword = true;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormFieldState<String>> _emailFieldKey =
+      GlobalKey<FormFieldState<String>>();
+  final GlobalKey<FormFieldState<String>> _passwordFieldKey =
+      GlobalKey<FormFieldState<String>>();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+
   @override
   void initState() {
     super.initState();
     AnalyticsHelper.trackScreenView('login_screen');
+  }
+
+  @override
+  void dispose() {
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
   }
 
   @override
@@ -177,31 +193,34 @@ class _LoginState extends State<Login> {
       ),
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(28.w, 30.h, 28.w, 28.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildTitle(),
-            SizedBox(height: 6.h),
-            _buildSub(),
-            SizedBox(height: 22.h),
-            _buildSocialRow(),
-            SizedBox(height: 18.h),
-            _buildEmailDivider(),
-            SizedBox(height: 18.h),
-            _buildEmailInput(),
-            SizedBox(height: 14.h),
-            _buildPasswordInput(),
-            SizedBox(height: 8.h),
-            _buildForgotRow(),
-            SizedBox(height: 18.h),
-            _buildSignInButton(),
-            SizedBox(height: 14.h),
-            _buildCreateAccountFooter(),
-            SizedBox(height: 18.h),
-            _buildTeamDivider(),
-            SizedBox(height: 12.h),
-            _buildTeamAdminButton(),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildTitle(),
+              SizedBox(height: 6.h),
+              _buildSub(),
+              SizedBox(height: 22.h),
+              _buildSocialRow(),
+              SizedBox(height: 18.h),
+              _buildEmailDivider(),
+              SizedBox(height: 18.h),
+              _buildEmailInput(),
+              SizedBox(height: 14.h),
+              _buildPasswordInput(),
+              SizedBox(height: 8.h),
+              _buildForgotRow(),
+              SizedBox(height: 18.h),
+              _buildSignInButton(),
+              SizedBox(height: 14.h),
+              _buildCreateAccountFooter(),
+              SizedBox(height: 18.h),
+              _buildTeamDivider(),
+              SizedBox(height: 12.h),
+              _buildTeamAdminButton(),
+            ],
+          ),
         ),
       ),
     );
@@ -322,98 +341,39 @@ class _LoginState extends State<Login> {
 
   // ── Email + Password inputs ────────────────────────────────────────────
   Widget _buildEmailInput() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _inputLabel('Email address'),
-        SizedBox(height: 6.h),
-        _inputField(
-          controller: authController.loginUserPhone, // legacy name; holds email
-          keyboardType: TextInputType.emailAddress,
-          obscure: false,
-        ),
-      ],
+    return FhTextField(
+      fieldKey: _emailFieldKey,
+      focusNode: _emailFocus,
+      controller: authController.loginUserPhone,
+      label: 'Email address',
+      hint: 'you@example.com',
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      autofillHints: const [AutofillHints.email],
+      validator: FhValidators.email,
+      onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
     );
   }
 
   Widget _buildPasswordInput() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _inputLabel('Password'),
-        SizedBox(height: 6.h),
-        _inputField(
-          controller: authController.loginUserPassword,
-          keyboardType: TextInputType.text,
-          obscure: _obscurePassword,
-          suffixIcon: GestureDetector(
-            onTap: () => setState(() => _obscurePassword = !_obscurePassword),
-            child: Icon(
-              _obscurePassword
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: _label,
-              size: 20,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _inputLabel(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 11.5.sp,
-        fontWeight: FontWeight.w600,
-        color: _label,
-        letterSpacing: 0.23, // 0.02em × 11.5
-      ),
-    );
-  }
-
-  Widget _inputField({
-    required TextEditingController controller,
-    required TextInputType keyboardType,
-    required bool obscure,
-    Widget? suffixIcon,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscure,
-      cursorColor: _primaryGreen,
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 14.sp,
-        color: _textDark,
-      ),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 13.sp,
-          color: _placeholder,
-        ),
-        suffixIcon: suffixIcon == null
-            ? null
-            : Padding(
-                padding: EdgeInsets.only(right: 14.w),
-                child: suffixIcon,
-              ),
-        suffixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: _inputBorder, width: 1.2),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: _primaryGreen, width: 1.5),
+    return FhTextField(
+      fieldKey: _passwordFieldKey,
+      focusNode: _passwordFocus,
+      controller: authController.loginUserPassword,
+      label: 'Password',
+      obscureText: _obscurePassword,
+      textInputAction: TextInputAction.done,
+      autofillHints: const [AutofillHints.password],
+      validator: FhValidators.password,
+      onFieldSubmitted: (_) => _onSignInTapped(),
+      suffixIcon: GestureDetector(
+        onTap: () => setState(() => _obscurePassword = !_obscurePassword),
+        child: Icon(
+          _obscurePassword
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
+          color: _label,
+          size: 20,
         ),
       ),
     );
@@ -495,38 +455,27 @@ class _LoginState extends State<Login> {
 
   // ── Sign In tap — preserves all original analytics + validation ───────
   Future<void> _onSignInTapped() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     await AnalyticsHelper.trackButtonClick(
       'continue_button',
       screenName: 'login_screen',
     );
-    if (!_validateInputs()) return;
+    final valid = _formKey.currentState?.validate() ?? false;
+    if (!valid) {
+      await scrollToFirstInvalidField(
+        _formKey,
+        fieldKeysInOrder: [_emailFieldKey, _passwordFieldKey],
+        focusNodesInOrder: [_emailFocus, _passwordFocus],
+      );
+      AnalyticsHelper.trackError(
+        'validation_error',
+        errorMessage: 'Inline form validation failed',
+        screenName: 'login_screen',
+      );
+      return;
+    }
     await AnalyticsHelper.trackLogin('email');
     authController.login();
-  }
-
-  // Mirrors the original login.dart validation block verbatim — same toasts,
-  // same analytics events, same checks (empty fields + GetUtils isEmail).
-  bool _validateInputs() {
-    if (authController.loginUserPhone.text.isEmpty ||
-        authController.loginUserPassword.text.isEmpty) {
-      CustomToast.failToast(msg: "Please provide all information");
-      AnalyticsHelper.trackError(
-        'validation_error',
-        errorMessage: 'Missing required fields',
-        screenName: 'login_screen',
-      );
-      return false;
-    }
-    if (!authController.loginUserPhone.text.removeAllWhitespace.isEmail) {
-      CustomToast.failToast(msg: "Please provide valid email");
-      AnalyticsHelper.trackError(
-        'validation_error',
-        errorMessage: 'Invalid email format',
-        screenName: 'login_screen',
-      );
-      return false;
-    }
-    return true;
   }
 
   // ── Create Account footer (route preserved → SignUpNewUser) ───────────
@@ -651,7 +600,15 @@ class _LoginState extends State<Login> {
       'team_admin_login',
       screenName: 'login_screen',
     );
-    if (!_validateInputs()) return;
+    final valid = _formKey.currentState?.validate() ?? false;
+    if (!valid) {
+      await scrollToFirstInvalidField(
+        _formKey,
+        fieldKeysInOrder: [_emailFieldKey, _passwordFieldKey],
+        focusNodesInOrder: [_emailFocus, _passwordFocus],
+      );
+      return;
+    }
     FocusManager.instance.primaryFocus?.unfocus();
     Get.bottomSheet(
       _TeamRolePicker(onPick: _onTeamRolePicked),

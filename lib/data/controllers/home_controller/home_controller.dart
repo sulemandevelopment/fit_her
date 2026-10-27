@@ -368,6 +368,15 @@ class HomeController extends GetxController implements GetxService {
 
   DateTime? get trialEndsAt => trialStartedAt.value?.add(kTrialLength);
 
+  /// True when she is on a free trial (live 3-day trial or Free Trial plan).
+  bool get isFreeTrialUser {
+    if (trialLive.value) return true;
+    return userHomeData?.userAllPlans.any(
+          (plan) => plan.title.trim().toLowerCase() == 'free trial',
+        ) ??
+        false;
+  }
+
   void _syncTrialRx() {
     final j = trialJourney;
     DateTime? started;
